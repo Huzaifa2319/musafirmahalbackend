@@ -136,6 +136,15 @@ router.post("/giveFeedback", (req, res) => {
   }
 });
 
+router.get("/viewFeedback", async (req, res) => {
+  try {
+    const feed = await Feedback.find();
+    res.json(feed);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get("/Welcome", auth, (req, res) => {
   console.log("Welcome");
   res.send("Welcome");
