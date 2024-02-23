@@ -102,6 +102,17 @@ router.delete("/deleteTrip/:id", async (req, res) => {
     });
 });
 
+router.delete("/clearFeedback", async (req, res) => {
+  let result = await Feedback.deleteMany()
+    .then((response) => {
+      console.log(response);
+      res.status(201).json(response);
+    })
+    .catch((err) => {
+      res.status(400).send("Error");
+    });
+});
+
 router.put("/updateTrips/:id", async (req, res) => {
   const { id } = req.params;
   const { isExpire } = req.body; // The new name to be updated
@@ -125,11 +136,11 @@ router.put("/updateTrips/:id", async (req, res) => {
   }
 });
 
-router.post("/giveFeedback", (req, res) => {
+router.post("/giveFeedback", async (req, res) => {
   const data = req.body;
   try {
     const feedback = new Feedback(data);
-    feedback.save();
+    await feedback.save();
     res.status(201).json({ success: true, data: feedback });
   } catch (error) {
     res.status(400).json({ success: false, msg: error });
