@@ -180,7 +180,7 @@ router.post("/adminlogin", async (req, res, next) => {
       token = jwt.sign(
         { adminname: existingUser.adminname },
         process.env.SecretKey,
-        { expiresIn: "30s" }
+        { expiresIn: "120s" }
       );
     } catch (err) {
       console.log(err);
