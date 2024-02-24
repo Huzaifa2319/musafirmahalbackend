@@ -5,6 +5,7 @@ const User = require("../Models/UserSchema");
 const auth = require("../Middleware/Auth");
 const Trip = require("../Models/Trip");
 const Feedback = require("../Models/Feedback");
+const Admin = require("../Models/Admin");
 require("dotenv").config();
 
 router.post("/login", async (req, res, next) => {
@@ -57,7 +58,7 @@ router.post("/signup", (req, res) => {
   }
 });
 
-router.post("/addTrip", (req, res) => {
+router.post("/addTrip", auth, (req, res) => {
   const data = req.body;
   try {
     const trip = new Trip(data);
@@ -89,7 +90,7 @@ router.get("/searchTrip/:id", async (req, res) => {
   }
 });
 
-router.delete("/deleteTrip/:id", async (req, res) => {
+router.delete("/deleteTrip/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   let result = await Trip.deleteOne({ _id: id })
@@ -102,7 +103,7 @@ router.delete("/deleteTrip/:id", async (req, res) => {
     });
 });
 
-router.delete("/clearFeedback", async (req, res) => {
+router.delete("/clearFeedback", auth, async (req, res) => {
   let result = await Feedback.deleteMany()
     .then((response) => {
       console.log(response);
@@ -113,7 +114,7 @@ router.delete("/clearFeedback", async (req, res) => {
     });
 });
 
-router.put("/updateTrips/:id", async (req, res) => {
+router.put("/updateTrips/:id", auth, async (req, res) => {
   const { id } = req.params;
   const { isExpire } = req.body; // The new name to be updated
   console.log(req.body);
@@ -147,7 +148,7 @@ router.post("/giveFeedback", async (req, res) => {
   }
 });
 
-router.get("/viewFeedback", async (req, res) => {
+router.get("/viewFeedback", auth, async (req, res) => {
   try {
     const feed = await Feedback.find();
     res.json(feed);
@@ -160,5 +161,51 @@ router.get("/Welcome", auth, (req, res) => {
   console.log("Welcome");
   res.send("Welcome");
 });
+
+router.post("/adminlogin", async (req, res, next) => {
+  let { adminname, password } = req.body;
+  let existingUser = await Admin.findOne({
+    adminname: adminname,
+    password: password,
+  });
+  if (!existingUser) {
+    const error = Error("Wrong name or password");
+    res.status(401).json({
+      success: false,
+      error: error.message,
+    });
+  } else {
+    let token;
+    try {
+      token = jwt.sign(
+        { adminname: existingUser.adminname },
+        process.env.SecretKey,
+        { expiresIn: "30s" }
+      );
+    } catch (err) {
+      console.log(err);
+      const error = new Error("Error! Something went wrong.");
+      next(error);
+    }
+    res.status(200).json({
+      success: true,
+      data: {
+        adminname: existingUser.adminname,
+        token: token,
+      },
+    });
+  }
+});
+
+// router.post("/adup", (req, res) => {
+//   const data = req.body;
+//   try {
+//     const ad = new Admin(data);
+//     ad.save();
+//     res.status(201).json({ success: true, data: ad });
+//   } catch (error) {
+//     res.status(400).json({ success: false, msg: error });
+//   }
+// });
 
 module.exports = router;
