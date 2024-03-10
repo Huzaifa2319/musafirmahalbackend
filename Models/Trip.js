@@ -48,7 +48,7 @@ const TripSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    discout: {
+    discount: {
       type: String,
       required: true,
     },
