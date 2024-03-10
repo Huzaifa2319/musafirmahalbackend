@@ -24,7 +24,11 @@ router.post("/login", async (req, res, next) => {
     let token;
     try {
       token = jwt.sign(
-        { full_name: existingUser.full_name, email: existingUser.email },
+        {
+          full_name: existingUser.full_name,
+          email: existingUser.email,
+          id: existingUser._id,
+        },
         process.env.SecretKey,
         { expiresIn: "1h" }
       );
@@ -38,6 +42,7 @@ router.post("/login", async (req, res, next) => {
       data: {
         full_name: existingUser.full_name,
         email: existingUser.email,
+        id: existingUser._id,
         token: token,
       },
     });
@@ -194,6 +199,31 @@ router.post("/adminlogin", async (req, res, next) => {
         token: token,
       },
     });
+  }
+});
+
+router.get("/getUser/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const user = await User.findOne({ _id: id }, { password: 0 });
+    console.log(user);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put("/changePassword", async (req, res) => {
+  const { id, newpassword } = req.body;
+  try {
+    const updatedUser = await User.updateOne(
+      { _id: id },
+      { $set: { password: newpassword } }
+    );
+    res.json({ message: "User password updated successfully", updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: "error.message" });
   }
 });
 

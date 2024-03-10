@@ -48,6 +48,14 @@ const TripSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    discout: {
+      type: String,
+      required: true,
+    },
+    minticketsfordiscount: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
