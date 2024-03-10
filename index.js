@@ -9,12 +9,12 @@ const app = express();
 require("dotenv").config();
 
 app.use(express.json());
-const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: "http://localhost:3000",
+//   credentials: true, //access-control-allow-credentials:true
+//   optionSuccessStatus: 200,
+// };
+app.use(cors());
 
 const MONGODB_URL = process.env.URL;
 const port = process.env.PORT;
