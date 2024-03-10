@@ -185,7 +185,7 @@ router.post("/adminlogin", async (req, res, next) => {
       token = jwt.sign(
         { adminname: existingUser.adminname },
         process.env.SecretKey,
-        { expiresIn: "120s" }
+        { expiresIn: "1h" }
       );
     } catch (err) {
       console.log(err);
