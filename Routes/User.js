@@ -262,4 +262,65 @@ router.get("/mybookings/:id", auth, async (req, res) => {
   }
 });
 
+//-----------------------------------------------------------
+
+router.put("/confirmBooking", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const book = await Booking.updateOne(
+      { _id: id },
+      { $set: { status: "confirmed" } }
+    );
+
+    res.status(200).json({ message: "Booking Confirmed Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+router.put("/cancelBooking", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const book = await Booking.updateOne(
+      { _id: id },
+      { $set: { status: "cancelled" } }
+    );
+
+    res.status(200).json({ message: "Booking has been cancelled" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.put("/confirmAll", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const book = await Booking.updateMany(
+      { tripId: id },
+      { $set: { status: "confirmed" } }
+    );
+
+    res.status(200).json({ message: "Booking Confirmed Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/tripBooked/:id", auth, async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const book = await Booking.find({ tripId: id });
+    console.log(book);
+    res.status(200).json(book);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
