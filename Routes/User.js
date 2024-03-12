@@ -6,6 +6,7 @@ const auth = require("../Middleware/Auth");
 const Trip = require("../Models/Trip");
 const Feedback = require("../Models/Feedback");
 const Admin = require("../Models/Admin");
+const Booking = require("../Models/Bookings");
 require("dotenv").config();
 
 router.post("/login", async (req, res, next) => {
@@ -83,7 +84,7 @@ router.get("/getTrips", async (req, res) => {
   }
 });
 
-router.get("/searchTrip/:id", async (req, res) => {
+router.get("/searchTrip/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -142,7 +143,7 @@ router.put("/updateTrips/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/giveFeedback", async (req, res) => {
+router.post("/giveFeedback", auth, async (req, res) => {
   const data = req.body;
   try {
     const feedback = new Feedback(data);
@@ -202,7 +203,7 @@ router.post("/adminlogin", async (req, res, next) => {
   }
 });
 
-router.get("/getUser/:id", async (req, res) => {
+router.get("/getUser/:id", auth, async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
@@ -214,7 +215,7 @@ router.get("/getUser/:id", async (req, res) => {
   }
 });
 
-router.put("/changePassword", async (req, res) => {
+router.put("/changePassword", auth, async (req, res) => {
   const { id, newpassword } = req.body;
   try {
     const updatedUser = await User.updateOne(
@@ -224,6 +225,17 @@ router.put("/changePassword", async (req, res) => {
     res.json({ message: "User password updated successfully", updatedUser });
   } catch (error) {
     res.status(500).json({ message: "error.message" });
+  }
+});
+
+router.post("/bookTrip", auth, (req, res) => {
+  const data = req.body;
+  try {
+    const book = new Booking(data);
+    book.save();
+    res.status(201).json({ success: true, data: book });
+  } catch (error) {
+    res.status(400).json({ success: false, msg: error });
   }
 });
 
@@ -237,5 +249,17 @@ router.put("/changePassword", async (req, res) => {
 //     res.status(400).json({ success: false, msg: error });
 //   }
 // });
+
+router.get("/mybookings/:id", auth, async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const book = await Booking.find({ userId: id });
+    console.log(book);
+    res.status(200).json(book);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 module.exports = router;
