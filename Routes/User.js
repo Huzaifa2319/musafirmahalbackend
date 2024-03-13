@@ -323,4 +323,17 @@ router.get("/tripBooked/:id", auth, async (req, res) => {
   }
 });
 
+router.delete("/deleteAllBookings/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id, " <<<<");
+  let result = await Booking.deleteMany({ tripId: id })
+    .then((response) => {
+      console.log(response);
+      res.status(201).json(response);
+    })
+    .catch((err) => {
+      res.status(400).send("Error");
+    });
+});
+
 module.exports = router;
