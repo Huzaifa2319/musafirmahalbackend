@@ -24,10 +24,6 @@ const TripSchema = new Schema(
       type: String,
       required: true,
     },
-    estTime: {
-      type: String,
-      required: true,
-    },
     date: {
       type: String,
       required: true,

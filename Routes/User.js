@@ -31,7 +31,7 @@ router.post("/login", async (req, res, next) => {
           id: existingUser._id,
         },
         process.env.SecretKey,
-        { expiresIn: "1h" }
+        { expiresIn: "30d" }
       );
     } catch (err) {
       console.log(err);
@@ -84,7 +84,7 @@ router.get("/getTrips", async (req, res) => {
   }
 });
 
-router.get("/searchTrip/:id", auth, async (req, res) => {
+router.get("/searchTrip/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -143,7 +143,7 @@ router.put("/updateTrips/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/giveFeedback", auth, async (req, res) => {
+router.post("/giveFeedback", async (req, res) => {
   const data = req.body;
   try {
     const feedback = new Feedback(data);
@@ -203,7 +203,7 @@ router.post("/adminlogin", async (req, res, next) => {
   }
 });
 
-router.get("/getUser/:id", auth, async (req, res) => {
+router.get("/getUser/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
@@ -228,7 +228,7 @@ router.put("/changePassword", auth, async (req, res) => {
   }
 });
 
-router.post("/bookTrip", auth, (req, res) => {
+router.post("/bookTrip", (req, res) => {
   const data = req.body;
   try {
     const book = new Booking(data);
