@@ -3,17 +3,14 @@ var mongoose = require("mongoose");
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
+const Email = require("./Middleware/Email");
+const nodemailer = require("nodemailer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 require("dotenv").config();
 
 app.use(express.json());
-// const corsOptions = {
-//   origin: "http://localhost:3000",
-//   credentials: true, //access-control-allow-credentials:true
-//   optionSuccessStatus: 200,
-// };
 app.use(cors());
 
 const MONGODB_URL = process.env.URL;
@@ -56,6 +53,42 @@ const parser = multer({ storage: storage });
 // Your route to handle file uploads
 app.post("/upload", parser.single("image"), (req, res) => {
   res.json({ imageUrl: req.file.path }); // Respond with the uploaded image URL
+});
+
+//--------------------------------------------------------------------------------------------------
+app.post("/sendemail", async (req, res) => {
+  let trip = req.body.trip;
+  let book = req.body.book;
+
+  const toSend = Email({ trip, book });
+  const to_ = book.email;
+  console.log(to_);
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // SMTP server address (usually mail.your-domain.com)
+    port: 465, // Port for SMTP (usually 465)
+    secure: true, // Usually true if connecting to port 465
+    auth: {
+      user: "ranahuz786@gmail.com", // Your email address
+      pass: "afbg hknw sphp fzyk", // Password (for gmail, your app password)
+    },
+  });
+
+  let info = await transporter
+    .sendMail({
+      from: '"You" <ranahuz786@gmail.com>',
+      to: to_,
+      subject: "Musafir Mahal Booking Confirmed!",
+      html: toSend,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  // console.log(info.messageId);
+  res.send("Email Sent");
 });
 
 //--------------------------------------------------------------------------------------------------
